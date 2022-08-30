@@ -1,6 +1,7 @@
 CREATE TABLE `users` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255),
+  `nomor_induk` varchar(255),
   `email` varchar(255) UNIQUE,
   `email_verified_at` datetime,
   `password` varchar(255),
