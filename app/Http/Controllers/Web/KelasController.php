@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 
 use Yajra\DataTables\Facades\DataTables;
 
+use App\Models\Child;
 use App\Models\Kelas;
 
 use File;
@@ -47,7 +48,6 @@ class KelasController extends Controller
                 })
 		        ->addColumn('action', function ($data){
 		            return '
-                    	<a href="'.e(route('cpanel.show.kelas', $data->id)).'" class="btn btn-primary btn-sm" title="Detail Kelas"><span class="fas fa-search"></span></a>
                     	<a href="#" value="'.e(route('cpanel.edit.kelas', $data->id)).'" class="btn btn-warning btn-sm modalEdit" title="Edit Kelas" data-toggle="modal" data-target="#modalEdit"><span class="fas fa-pencil-alt"></span></a>
                     	<form style="display: inline;" method="POST" action="'.e(route('cpanel.delete.kelas', $data->id)).'" onsubmit="return confirm('."'Are you sure want to delete this data?'".')"> <input type="hidden" name="_method" value="DELETE"><input type="hidden" name="_token" value="'.csrf_token().'"> <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></button> </form>
 		            ';
@@ -68,7 +68,6 @@ class KelasController extends Controller
     	$validator = Validator::make($request->all(), [
             'foto' => ['mimes:jpg,png', 'max:2048'],
             'kelas' => ['required'],
-            'status' => ['required'],
             'thn_akademik' => ['required'],
         ]);
 
@@ -81,12 +80,6 @@ class KelasController extends Controller
     	DB::beginTransaction();
 
     	try {
-    		$folder = 'files/kelas/'.$request->kelas.'/';
-            
-            if (!File::isDirectory($folder)) {
-                File::makeDirectory($folder, 0777, TRUE);
-            }
-
 	    	if ($request->status == 'on') {
 	    		$status = 1;
 	    	} else {
@@ -114,6 +107,12 @@ class KelasController extends Controller
 	    	$data->periode_akhir = $periode_akhir;
 
 	    	if ($request->file('foto')) {
+                $folder = 'files/kelas/'.$request->kelas.'/';
+                
+                if (!File::isDirectory($folder)) {
+                    File::makeDirectory($folder, 0777, TRUE);
+                }
+                
                 $files = $request->file('foto');
                 $file_foto = $files->getClientOriginalName();
                 $files->move($folder, $file_foto);
@@ -121,6 +120,22 @@ class KelasController extends Controller
             }
 			
 			$data->save();
+
+            $nimStudents = $request->nomor_induk_student;
+            $namaStudents = $request->nama_student;
+            $parentStudents = $request->nik_parent;
+
+            $dataStudents = [];
+            for ($i = 0; $i < count((array) $nimStudents); $i++) {
+                $dataStudents[] = [
+                    'nomor_induk' => $nimStudents[$i],
+                    'nik_parent' => $parentStudents[$i],
+                    'nama' => $namaStudents[$i],
+                    'id_kelas' => $data->id,
+                ];
+            }
+
+            Child::insert($dataStudents);
 
     		DB::commit();
     		Session::flash('success', 'Data kelas berhasil disimpan');
@@ -130,5 +145,128 @@ class KelasController extends Controller
     	}
 
     	return redirect()->back();
+    }
+
+    public function edit($id)
+    {
+        $data = Kelas::find($id);
+
+        return view('cpanel.kelas.edit', get_defined_vars())->renderSections()['content'];
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'foto' => ['mimes:jpg,png', 'max:2048'],
+            'kelas' => ['required'],
+            'thn_akademik' => ['required'],
+        ]);
+
+        if ($validator->fails()) {
+            Session::flash('error', $validator->errors()->first());
+
+            return redirect()->back();
+        }
+
+        DB::beginTransaction();
+
+        try {
+            if ($request->status == 'on') {
+                $status = 1;
+            } else {
+                $status = 0;
+            }
+
+            $periode_awal = null;
+            $periode_akhir = null;
+
+            if ($request->periode) {
+                $periode = explode(' - ', $request->periode);
+                $periode_awal = date('Y-m-d', strtotime($periode[0]));
+                if (isset($periode[1])) {
+                    $periode_akhir = date('Y-m-d', strtotime($periode[1]));
+                }
+            }
+
+            $data = Kelas::find($id);
+            $data->kelas = $request->kelas;
+            $data->thn_akademik = $request->thn_akademik;
+            $data->status = $status;
+            $data->nomor_pegawai = Auth::user()->nomor_induk;
+            $data->deskripsi = $request->deskripsi;
+            $data->periode_awal = $periode_awal;
+            $data->periode_akhir = $periode_akhir;
+
+            if ($request->file('foto')) {
+                $folder = 'files/kelas/'.$request->kelas.'/';
+                
+                if (!File::isDirectory($folder)) {
+                    File::makeDirectory($folder, 0777, TRUE);
+                }
+
+                $files = $request->file('foto');
+                $file_foto = $files->getClientOriginalName();
+                $files->move($folder, $file_foto);
+                $data->foto = $file_foto;
+            }
+            
+            $data->save();
+
+            $nimStudents = $request->nomor_induk_student;
+            $namaStudents = $request->nama_student;
+            $parentStudents = $request->nik_parent;
+
+            $dataStudents = [];
+            for ($i = 0; $i < count((array) $nimStudents); $i++) {
+                $dataStudents[] = [
+                    'nomor_induk' => $nimStudents[$i],
+                    'nik_parent' => $parentStudents[$i],
+                    'nama' => $namaStudents[$i],
+                    'id_kelas' => $data->id,
+                ];
+            }
+
+            Child::insert($dataStudents);
+
+            DB::commit();
+            Session::flash('success', 'Data kelas berhasil disimpan');
+        } catch (Exception $ex) {
+            DB::rollBack();
+            Session::flash('error', $ex->getMessage());
+        }
+
+        return redirect()->back();
+    }
+
+    public function delete($id)
+    {
+        DB::beginTransaction();
+        try {
+            Kelas::find($id)->delete();
+
+            DB::commit();
+            Session::flash('success', 'Data kelas berhasil dihapus');
+        } catch (Exception $ex) {
+            DB::rollBack();
+            Session::flash('error', $ex->getMessage());
+        }
+
+        return redirect()->back();
+    }
+
+    public function deleteStudent($id_kelas, $nomor_induk)
+    {
+        DB::beginTransaction();
+        try {
+            Child::where(array('id_kelas' => $id_kelas, 'nomor_induk' => $nomor_induk))->delete();
+
+            DB::commit();
+            Session::flash('success', 'Data murid berhasil dihapus');
+        } catch (Exception $ex) {
+            DB::rollBack();
+            Session::flash('error', $ex->getMessage());
+        }
+
+        return redirect()->back();
     }
 }

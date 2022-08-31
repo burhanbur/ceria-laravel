@@ -17,6 +17,6 @@ class Indicator extends Model
     ];
 
     public function grade() {
-        $this->hasMany('App\Models\Grade', 'id_indicator');
+        return $this->hasMany('App\Models\Grade', 'id_indicator');
     }
  }

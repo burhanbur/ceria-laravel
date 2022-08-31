@@ -30,10 +30,10 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'cpanel'], function() {
 		Route::get('kelas', [KelasController::class, 'index'])->name('kelas');
 		Route::get('create-kelas', [KelasController::class, 'create'])->name('create.kelas');
 		Route::post('store-kelas', [KelasController::class, 'store'])->name('store.kelas');
-		Route::get('show-kelas/{id}', [KelasController::class, 'show'])->name('show.kelas');
 		Route::get('edit-kelas/{id}', [KelasController::class, 'edit'])->name('edit.kelas');
 		Route::put('update-kelas/{id}', [KelasController::class, 'update'])->name('update.kelas');
 		Route::delete('delete-kelas/{id}', [KelasController::class, 'delete'])->name('delete.kelas');
+		Route::get('delete-siswa-kelas/{id_kelas}/nim/{nomor_induk}', [KelasController::class, 'deleteStudent'])->name('delete.siswa.kelas');
 	});
 
 	Route::group(['middleware' => ['role:admin']], function() {

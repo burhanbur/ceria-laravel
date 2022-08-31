@@ -25,14 +25,14 @@ class Document extends Model
     ];
 
     public function event() {
-        $this->belongsTo('App\Models\KelasEvent', 'id_event');
+        return $this->belongsTo('App\Models\KelasEvent', 'id_event');
     }
 
     public function submission() {
-        $this->belongsTo('App\Models\Submission', 'id_submission');
+        return $this->belongsTo('App\Models\Submission', 'id_submission');
     }
 
     public function assignment() {
-        $this->belongsTo('App\Models\Assignment', 'id_assignment');
+        return $this->belongsTo('App\Models\Assignment', 'id_assignment');
     }
 }

@@ -23,14 +23,14 @@ class Child extends Model
     ];
 
     public function parents() {
-        $this->belongsTo('App\Models\Parents', 'nik_parent');
+        return $this->belongsTo('App\Models\Parents', 'nik_parent');
     }
 
     public function kelas() {
-        $this->belongsTo('App\Models\Kelas', 'id_kelas');
+        return $this->belongsTo('App\Models\Kelas', 'id_kelas');
     }
 
     public function attendance() {
-        $this->hasMany('App\Models\Attendance', 'nomor_induk');
+        return $this->hasMany('App\Models\Attendance', 'nomor_induk');
     }
 }

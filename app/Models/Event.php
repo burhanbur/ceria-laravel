@@ -22,6 +22,6 @@ class Event extends Model
     ];
 
     public function kelas() {
-        $this->belongsTo('App\Models\Kelas', 'id_class');
+        return $this->belongsTo('App\Models\Kelas', 'id_class');
     }
 }

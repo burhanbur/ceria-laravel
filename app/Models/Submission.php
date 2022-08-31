@@ -24,18 +24,18 @@ class Submission extends Model
     ];
 
     public function documents() {
-        $this->hasMany('App\Models\Document', 'id_submission');
+        return $this->hasMany('App\Models\Document', 'id_submission');
     }
 
     public function grade() {
-        $this->hasMany('App\Models\Grade', 'id_submission');
+        return $this->hasMany('App\Models\Grade', 'id_submission');
     }
 
     public function assignment() {
-        $this->belongsTo('App\Models\Assignment', 'id_assignment');
+        return $this->belongsTo('App\Models\Assignment', 'id_assignment');
     }
 
     public function kelas() {
-        $this->belongsTo('App\Models\Kelas', 'id_kelas');
+        return $this->belongsTo('App\Models\Kelas', 'id_kelas');
     }
 }

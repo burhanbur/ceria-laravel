@@ -22,6 +22,6 @@ class Teacher extends Model
     ];
 
     public function kelas() {
-        $this->hasOne('App\Models\Kelas', 'nomor_pegawai');
+        return $this->hasOne('App\Models\Kelas', 'nomor_pegawai');
     }
 }

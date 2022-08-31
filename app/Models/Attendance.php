@@ -21,10 +21,10 @@ class Attendance extends Model
     ];
 
     public function child() {
-        $this->belongsTo('App\Models\Child', 'nomor_induk');
+        return $this->belongsTo('App\Models\Child', 'nomor_induk');
     }
 
     public function kelas() {
-        $this->belongsTo('App\Models\Kelas', 'id_class');
+        return $this->belongsTo('App\Models\Kelas', 'id_class');
     }
 }

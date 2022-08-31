@@ -23,10 +23,10 @@ class Assignment extends Model
     ];
 
     public function documents() {
-        $this->hasMany('App\Models\Document', 'id_assignment');
+        return $this->hasMany('App\Models\Document', 'id_assignment');
     }
 
     public function submission() {
-        $this->hasMany('App\Models\Submission', 'id_assignment');
+        return $this->hasMany('App\Models\Submission', 'id_assignment');
     }
 }

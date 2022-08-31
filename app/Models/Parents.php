@@ -23,6 +23,6 @@ class Parents extends Model
     ];
 
     public function childs() {
-        $this->hasMany('App\Models\Child', 'nik_parent');
+        return $this->hasMany('App\Models\Child', 'nik_parent');
     }
 }

@@ -18,10 +18,10 @@ class Grade extends Model
     ];
 
     public function submission() {
-        $this->belongsTo('App\Models\Submission', 'id_submission');
+        return $this->belongsTo('App\Models\Submission', 'id_submission');
     }
 
     public function indicator() {
-        $this->belongsTo('App\Models\Indicator', 'id_indicator');
+        return $this->belongsTo('App\Models\Indicator', 'id_indicator');
     }
 }

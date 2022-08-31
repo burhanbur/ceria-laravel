@@ -24,23 +24,27 @@ class Kelas extends Model
         'periode_akhir'
     ];
 
+    public function user() {
+        return $this->belongsTo('App\Models\User', 'nomor_induk');
+    }
+
     public function teacher() {
-        $this->belongsTo('App\Models\Teacher', 'nomor_pegawai');
+        return $this->belongsTo('App\Models\Teacher', 'nomor_pegawai');
     }
 
     public function childs() {
-        $this->hasMany('App\Models\Child', 'id_kelas');
+        return $this->hasMany('App\Models\Child', 'id_kelas');
     }
 
     public function attendance() {
-        $this->hasMany('App\Models\Attendance', 'id_class');
+        return $this->hasMany('App\Models\Attendance', 'id_class');
     }
 
     public function submission() {
-        $this->hasMany('App\Models\Submission', 'id_kelas');
+        return $this->hasMany('App\Models\Submission', 'id_kelas');
     }
 
     public function events() {
-        $this->hasMany('App\Models\KelasEvent', 'id_class');
+        return $this->hasMany('App\Models\KelasEvent', 'id_class');
     }
 }

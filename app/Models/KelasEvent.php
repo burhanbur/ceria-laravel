@@ -20,14 +20,14 @@ class KelasEvent extends Model
     ];
 
     public function kelas() {
-        $this->belongsTo('App\Models\Kelas', 'id_class');
+        return $this->belongsTo('App\Models\Kelas', 'id_class');
     }
 
     public function event() {
-        $this->belongsTo('App\Models\Event', 'id_event');
+        return $this->belongsTo('App\Models\Event', 'id_event');
     }
 
     public function documents() {
-        $this->hasMany('App\Models\Document', 'id_event');
+        return $this->hasMany('App\Models\Document', 'id_event');
     }
 }
