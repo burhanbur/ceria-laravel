@@ -12,8 +12,8 @@
                                         <li class="breadcrumb-item"><a href="" class="text-muted">Kelas</a></li>
                                     @endif
 
-                                    @if (Request::is('cpanel/surveys*', 'cpanel/event-surveys*'))
-                                        <li class="breadcrumb-item"><a href="" class="text-muted">Survey</a></li>
+                                    @if (Request::is('cpanel/tugas*'))
+                                        <li class="breadcrumb-item"><a href="" class="text-muted">Tugas</a></li>
                                     @endif
 
                                     @if (Request::is('cpanel/my-tasks*'))

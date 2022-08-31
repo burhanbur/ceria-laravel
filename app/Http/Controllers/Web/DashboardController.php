@@ -11,4 +11,9 @@ class DashboardController extends Controller
     {
         return view('cpanel.dashboard', get_defined_vars());
     }
+
+    public function underconstruction()
+    {
+    	return view('underconstruction', get_defined_vars());
+    }
 }

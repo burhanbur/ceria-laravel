@@ -24,8 +24,12 @@ class Kelas extends Model
         'periode_akhir'
     ];
 
+    public function kelasAssignment() {
+        return $this->hasMany('App\Models\KelasAssignment', 'id_class');
+    }
+
     public function user() {
-        return $this->belongsTo('App\Models\User', 'nomor_induk');
+        return $this->belongsTo('App\Models\User', 'nomor_pegawai', 'nomor_induk');
     }
 
     public function teacher() {
@@ -34,6 +38,10 @@ class Kelas extends Model
 
     public function childs() {
         return $this->hasMany('App\Models\Child', 'id_kelas');
+    }
+
+    public function assignment() {
+        return $this->hasMany('App\Models\Assignment', 'id_class');
     }
 
     public function attendance() {

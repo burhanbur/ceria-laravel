@@ -23,6 +23,69 @@ use Session;
 
 class KelasController extends Controller
 {
+    public function ortuKelas()
+    {
+        $data = Kelas::where('status', 1)->get();
+
+        if ($data) {
+            $hasClass = true;
+        } else {
+            $hasClass = false;
+        }
+
+        return view('cpanel.kelas.ortu_index', get_defined_vars());
+    }
+
+    public function ortuShowKelas($id)
+    {
+        $data = Kelas::find($id);
+
+        return view('cpanel.kelas.ortu_show', get_defined_vars())->renderSections()['content'];
+    }
+
+    public function ortuStoreSiswa(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'nomor_induk_student' => ['required'],
+            'nama_student' => ['required'],
+        ]);
+
+        if ($validator->fails()) {
+            Session::flash('error', $validator->errors()->first());
+
+            return redirect()->back();
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $data = Kelas::find($id);
+
+            $nimStudents = $request->nomor_induk_student;
+            $namaStudents = $request->nama_student;
+
+            $dataStudents = [];
+            for ($i = 0; $i < count((array) $nimStudents); $i++) {
+                $dataStudents[] = [
+                    'nomor_induk' => $nimStudents[$i],
+                    'nik_parent' => Auth::user()->nomor_induk,
+                    'nama' => $namaStudents[$i],
+                    'id_kelas' => $data->id,
+                ];
+            }
+
+            Child::insert($dataStudents);
+
+            DB::commit();
+            Session::flash('success', 'Data siswa berhasil disimpan dalam kelas '.$data->kelas);
+        } catch (Exception $ex) {
+            DB::rollBack();
+            Session::flash('error', $ex->getMessage());
+        }
+
+        return redirect()->back();
+    }
+
     public function index(Request $request)
     {
     	$user = Auth::user();
@@ -241,6 +304,7 @@ class KelasController extends Controller
     public function delete($id)
     {
         DB::beginTransaction();
+
         try {
             Kelas::find($id)->delete();
 
@@ -257,6 +321,7 @@ class KelasController extends Controller
     public function deleteStudent($id_kelas, $nomor_induk)
     {
         DB::beginTransaction();
+
         try {
             Child::where(array('id_kelas' => $id_kelas, 'nomor_induk' => $nomor_induk))->delete();
 

@@ -12,7 +12,18 @@ class KelasAssignment extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'id',
         'id_class',
-        'id_assignment'
+        'id_assignment',
     ];
+
+    public function kelas()
+    {
+    	return $this->belongsTo('App\Models\Kelas', 'id_class');
+    }
+
+    public function assignment()
+    {
+    	return $this->belongsTo('App\Models\Assignment', 'id_assignment');
+    }
 }

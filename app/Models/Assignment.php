@@ -26,6 +26,10 @@ class Assignment extends Model
         return $this->hasMany('App\Models\Document', 'id_assignment');
     }
 
+    public function kelasAssignment() {
+        return $this->hasMany('App\Models\KelasAssignment', 'id_class');
+    }
+
     public function submission() {
         return $this->hasMany('App\Models\Submission', 'id_assignment');
     }
