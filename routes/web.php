@@ -56,14 +56,10 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'cpanel'], function() {
 			Route::get('orangtua-kelas', [KelasController::class, 'ortuKelas'])->name('ortu.kelas');
 			Route::get('orangtua-kelas/{id}', [KelasController::class, 'ortuShowKelas'])->name('ortu.show.kelas');
 			Route::put('orangtua-kelas-daftar/{id}', [KelasController::class, 'ortuStoreSiswa'])->name('ortu.daftar.kelas'); // add peserta kelas
+
+			Route::get('orangtua-tugas', [TugasController::class, 'ortuTugas'])->name('ortu.tugas');
+			Route::get('orangtua-tugas/{id}', [TugasController::class, 'ortuShowTugas'])->name('ortu.show.tugas');
+			Route::put('orangtua-tugas/{id}', [TugasController::class, 'ortuStoreTugas'])->name('ortu.store.tugas');
 		});
-
-		Route::group(['middleware' => ['role:siswa']], function() {
-			
-		});
-	});
-
-	Route::group(['middleware' => ['role:admin']], function() {
-
 	});
 });

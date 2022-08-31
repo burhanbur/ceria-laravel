@@ -17,6 +17,7 @@ class Submission extends Model
         'id_kelas',
         'id_assignment',
         'title',
+        'files',
         'description',
         'date_created',
         'user_update',

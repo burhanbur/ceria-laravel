@@ -35,7 +35,7 @@
                         </li>
 
                         <li class="sidebar-item @if (Request::is('cpanel/orangtua-tugas*')) selected @endif"> 
-                            <a class="sidebar-link sidebar-link" href="{{ route('cpanel.tugas') }}" aria-expanded="false">
+                            <a class="sidebar-link sidebar-link" href="{{ route('cpanel.ortu.tugas') }}" aria-expanded="false">
                                 <i data-feather="slack" class="feather-icon"></i>
                                 <span class="hide-menu">Tugas</span>
                             </a>

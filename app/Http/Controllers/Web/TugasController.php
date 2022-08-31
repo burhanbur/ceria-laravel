@@ -13,8 +13,10 @@ use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
 
 use App\Models\Assignment;
+use App\Models\Child;
 use App\Models\Kelas;
 use App\Models\KelasAssignment;
+use App\Models\Submission;
 
 use File;
 use Auth;
@@ -24,6 +26,74 @@ use Session;
 
 class TugasController extends Controller
 {
+    public function ortuTugas(Request $request)
+    {
+        $user = Auth::user();
+        $data = DB::select('
+            select a.* from assignment as a 
+            join class_assignment as ca on ca.id_assignment = a.id 
+            join class as c on c.id = ca.id_class 
+            join child as ch on ch.id_kelas = c.id 
+            where a.isVisible = 1 and ch.nik_parent = ? and NOT EXISTS (select sub.id from submission as sub where nim_siswa = ch.nomor_induk and sub.id_kelas = c.id)
+            ', array($user->nomor_induk));
+
+        return view('cpanel.tugas.ortu_index', get_defined_vars());
+    }
+
+    public function ortuShowTugas($id)
+    {
+        $data = Assignment::find($id);
+
+        return view('cpanel.tugas.ortu_show', get_defined_vars())->renderSections()['content'];
+    }
+
+    public function ortuStoreTugas(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'files' => ['required','mimes:pdf', 'max:2048'],
+        ]);
+
+        if ($validator->fails()) {
+            Session::flash('error', $validator->errors()->first());
+
+            return redirect()->back();
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $child = Child::where('nik_parent', Auth::user()->nomor_induk)->first();
+
+            $data = new Submission;
+            $data->id_kelas = $child->id_kelas;
+            $data->nim_siswa = $child->nomor_induk;
+            $data->id_assignment = $id;
+
+            if ($request->file('files')) {
+                $folder = 'files/kelas/tugas/'.$child->nomor_induk;
+                
+                if (!File::isDirectory($folder)) {
+                    File::makeDirectory($folder, 0777, TRUE);
+                }
+                
+                $files = $request->file('files');
+                $file_foto = $files->getClientOriginalName();
+                $files->move($folder, $file_foto);
+                $data->files = $file_foto;
+            }
+            
+            $data->save();
+
+            DB::commit();
+            Session::flash('success', 'Data tugas berhasil disimpan');
+        } catch (Exception $ex) {
+            DB::rollBack();
+            Session::flash('error', $ex->getMessage());
+        }
+
+        return redirect()->back();
+    }
+
     public function index(Request $request)
     {
     	$user = Auth::user();
